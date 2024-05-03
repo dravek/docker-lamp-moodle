@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  apache:
+    image: httpd:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./www:/var/www/html
+      - ./wwwdata:/var/www/data
+    depends_on:
+      - mysql
+    networks:
+      - default
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: mydb
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - default
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8001:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: test
+    networks:
+      - default
+
+volumes:
+  mysql_data:
